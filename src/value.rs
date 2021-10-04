@@ -16,6 +16,8 @@
 // along with TRINCI. If not, see <https://www.gnu.org/licenses/>.
 
 //! Serde Value rappresentation
+//! 
+//! TODO: these tests shall be in the serde-value crate.
 
 #[cfg(test)]
 mod value_serialize_tests {
