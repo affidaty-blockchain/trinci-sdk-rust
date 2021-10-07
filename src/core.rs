@@ -89,11 +89,6 @@ macro_rules! named_unit_variant {
     };
 }
 
-mod variants {
-    crate::named_unit_variant!(ecdsa_p384r1);
-    crate::named_unit_variant!(ed25519);
-}
-
 /// PublicKey type
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 #[serde(tag = "type")]
