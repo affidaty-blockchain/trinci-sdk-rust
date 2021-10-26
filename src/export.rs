@@ -21,17 +21,14 @@ use crate::{
     common::*,
     core::{AppInput, AppOutput},
 };
-use std::{
-    alloc::{alloc, Layout},
-    mem::align_of,
-};
+use std::{alloc::Layout, mem::align_of};
 
 /// Memory allocation in the wasm linear memory from the host.
 ///
 /// This allocate a buffer on the wasm memory
 #[no_mangle]
-extern "C" fn my_alloc(len: usize) -> *mut u8 {
-    unsafe { alloc(Layout::from_size_align_unchecked(len, align_of::<usize>())) }
+extern "C" fn alloc(len: usize) -> *mut u8 {
+    unsafe { std::alloc::alloc(Layout::from_size_align_unchecked(len, align_of::<usize>())) }
 }
 
 extern "Rust" {
