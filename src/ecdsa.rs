@@ -36,7 +36,7 @@ pub enum CurveId {
 /// **WARNING:** ANY MODIFICATION CAN BREAK COMPATIBILITY WITH THE CORE.
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct PublicKey {
-    pub curve: CurveId,
+    pub curve_id: CurveId,
     #[serde(with = "serde_bytes")]
     pub value: Vec<u8>,
 }
