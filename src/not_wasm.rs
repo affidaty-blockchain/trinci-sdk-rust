@@ -162,9 +162,7 @@ pub fn write_mem(buf: &[u8]) -> i32 {
     let src = buf.as_ptr();
     let len = buf.len();
     mem.off += len;
-    if mem.off >= MEMORY_SIZE {
-        panic!("Out of WASM (mocked) memory");
-    }
+    assert!(!(mem.off >= MEMORY_SIZE), "Out of WASM (mocked) memory");
     unsafe {
         let dst = mem.buf.as_mut_ptr().add(prev_off);
         std::ptr::copy(src, dst, len);
