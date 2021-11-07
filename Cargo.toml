@@ -1,8 +1,8 @@
 [package]
 name = "trinci-sdk"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["The Trinci Team <trinci@affidaty.io>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 # Temporary start
