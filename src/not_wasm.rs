@@ -185,6 +185,17 @@ pub extern "C" fn hf_log(str_addr: i32, str_len: i32) {
 }
 
 #[no_mangle]
+pub extern "C" fn hf_emit(id_addr: i32, id_size: i32, data_addr: i32, data_size: i32) {
+    let id = slice_from_mem(id_addr, id_size);
+    let data = slice_from_mem(data_addr, data_size);
+    println!(
+        "[EMIT] - id: {}, data: {}",
+        String::from_utf8_lossy(id),
+        hex::encode(data)
+    );
+}
+
+#[no_mangle]
 pub extern "C" fn hf_store_data(key_addr: i32, key_size: i32, data_addr: i32, data_size: i32) {
     let ctx: &AppContext = get_app_ctx();
     let buf = slice_from_mem(key_addr, key_size);
