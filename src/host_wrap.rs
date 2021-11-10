@@ -28,7 +28,17 @@ use serde::{de::DeserializeOwned, Serialize};
 /// Host functions imported
 extern "C" {
     /// Raw log host funtion
-    fn hf_log(s: i32, s: i32);
+    fn hf_log(msg_addr: i32, msg_size: i32);
+
+    /// Raw emit host function
+    fn hf_emit(
+        caller_id_addr: i32,
+        caller_id_size: i32,
+        method_addr: i32,
+        method_size: i32,
+        data_addr: i32,
+        data_size: i32,
+    );
 
     /// Raw store_data host funtion
     fn hf_store_data(key_addr: i32, key_size: i32, data_addr: i32, data_size: i32);
@@ -72,6 +82,23 @@ pub fn log(msg: &str) {
     let msg_addr = slice_to_mem(msg.as_bytes());
     unsafe {
         hf_log(msg_addr, msg.len() as i32);
+    }
+}
+
+/// Notification facility for smart contracts.
+pub fn emit_data(caller_id: &str, method: &str, data: &[u8]) {
+    let caller_id_addr = slice_to_mem(caller_id.as_bytes());
+    let method_addr = slice_to_mem(method.as_bytes());
+    let data_addr = slice_to_mem(data);
+    unsafe {
+        hf_emit(
+            caller_id_addr,
+            caller_id.len() as i32,
+            method_addr,
+            method.len() as i32,
+            data_addr,
+            data.len() as i32,
+        );
     }
 }
 
