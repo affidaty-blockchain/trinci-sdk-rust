@@ -179,8 +179,8 @@ where
 }
 
 #[no_mangle]
-pub extern "C" fn hf_log(str_addr: i32, str_len: i32) {
-    let msg = slice_from_mem(str_addr, str_len);
+pub extern "C" fn hf_log(str_addr: i32, str_size: i32) {
+    let msg = slice_from_mem(str_addr, str_size);
     println!("[HF] - {}", String::from_utf8_lossy(msg));
 }
 
