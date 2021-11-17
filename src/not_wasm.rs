@@ -119,6 +119,13 @@ pub fn set_account_data(dst_id: &str, key: &str, data: &[u8]) {
     };
 }
 
+pub fn get_account_keys(src_id: &str) -> Vec<String> {
+    let dat = thread_data();
+    let accounts = &mut dat.borrow_mut().accounts;
+    let account = get_account(accounts, src_id);
+    account.data.keys().into_iter().cloned().collect()
+}
+
 pub fn get_account_asset(src_id: &str, asset: &str) -> Vec<u8> {
     let dat = thread_data();
     let accounts = &mut dat.borrow_mut().accounts;
@@ -193,6 +200,40 @@ pub extern "C" fn hf_emit(id_addr: i32, id_size: i32, data_addr: i32, data_size:
         String::from_utf8_lossy(id),
         hex::encode(data)
     );
+}
+
+#[no_mangle]
+pub extern "C" fn hf_get_keys(pattern_addr: i32, pattern_size: i32) -> WasmSlice {
+    let ctx: &AppContext = get_app_ctx();
+    let buf = slice_from_mem(pattern_addr, pattern_size);
+    let pattern = unsafe { std::str::from_utf8_unchecked(buf) };
+
+    let data_buf;
+
+    let output = if pattern.is_empty() || &pattern[pattern.len() - 1..] != "*" {
+        AppOutput {
+            success: false,
+            data: "last char of search pattern must be '*'".as_bytes(),
+        }
+    } else {
+        let keys = get_account_keys(ctx.owner);
+        let keys: Vec<String> = keys
+            .iter()
+            .cloned()
+            .filter(|s| {
+                (&pattern[..pattern.len() - 1]).is_empty()
+                    || s.starts_with(&pattern[..pattern.len() - 1])
+            })
+            .collect();
+        data_buf = rmp_serialize(&keys).unwrap_or_default();
+        AppOutput {
+            success: true,
+            data: &data_buf,
+        }
+    };
+
+    let buf = rmp_serialize(&output).unwrap();
+    slice_to_wslice(&buf)
 }
 
 #[no_mangle]
