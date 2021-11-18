@@ -5,10 +5,8 @@ authors = ["The Trinci Team <trinci@affidaty.io>"]
 edition = "2021"
 
 [dependencies]
-# Temporary start
 bs58 = "0.4.0"
 sha2 = "0.9.5"
-# Temporary end
 serde = { version = "1.0.126", features = ["derive"] }
 rmp-serde = "0.15.4"
 serde_bytes = "0.11.5"

@@ -40,6 +40,9 @@ extern "C" {
         data_size: i32,
     );
 
+    /// Raw get_keys host function
+    fn hf_get_keys(pattern_addr: i32, pattern_size: i32) -> WasmSlice;
+
     /// Raw store_data host funtion
     fn hf_store_data(key_addr: i32, key_size: i32, data_addr: i32, data_size: i32);
 
@@ -107,6 +110,18 @@ pub fn load_data(key: &str) -> Vec<u8> {
     let key_addr = slice_to_mem(key.as_bytes());
     let wslice = unsafe { hf_load_data(key_addr, key.len() as i32) };
     slice_from_wslice(wslice).to_vec()
+}
+
+/// Get the account keys.
+pub fn get_data_keys(pattern: &str) -> WasmResult<Vec<String>> {
+    let pattern_addr = slice_to_mem(pattern.as_bytes());
+    let wslice = unsafe { hf_get_keys(pattern_addr, pattern.len() as i32) };
+    let buf = slice_from_wslice(wslice).to_vec();
+    let res: AppOutput = rmp_deserialize(&buf)?;
+    match res.success {
+        true => rmp_deserialize::<Vec<String>>(res.data),
+        false => Err(WasmError::new(String::from_utf8_lossy(res.data).as_ref())),
+    }
 }
 
 /// Store account data associated to the given key.
