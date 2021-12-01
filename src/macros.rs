@@ -137,8 +137,7 @@ macro_rules! log {
 /// Helper macro around sdk notification facility.
 #[macro_export]
 macro_rules! emit_data_mp {
-    ($caller_id:expr, $method:expr, $data:expr) => {
-        $crate::rmp_serialize($data)
-            .and_then(|buf| Ok($crate::emit_data($caller_id, $method, &buf)));
+    ($event_name:expr, $event_data:expr) => {
+        $crate::rmp_serialize($event_data).and_then(|buf| Ok($crate::emit_data($event_name, &buf)));
     };
 }

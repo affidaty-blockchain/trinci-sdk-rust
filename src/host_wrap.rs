@@ -32,12 +32,10 @@ extern "C" {
 
     /// Raw emit host function
     fn hf_emit(
-        caller_id_addr: i32,
-        caller_id_size: i32,
-        method_addr: i32,
-        method_size: i32,
-        data_addr: i32,
-        data_size: i32,
+        event_name_addr: i32,
+        event_name_size: i32,
+        event_data_addr: i32,
+        event_data_size: i32,
     );
 
     /// Raw get_keys host function
@@ -89,18 +87,15 @@ pub fn log(msg: &str) {
 }
 
 /// Notification facility for smart contracts.
-pub fn emit_data(caller_id: &str, method: &str, data: &[u8]) {
-    let caller_id_addr = slice_to_mem(caller_id.as_bytes());
-    let method_addr = slice_to_mem(method.as_bytes());
-    let data_addr = slice_to_mem(data);
+pub fn emit_data(event_name: &str, event_data: &[u8]) {
+    let event_name_addr = slice_to_mem(event_name.as_bytes());
+    let event_data_addr = slice_to_mem(event_data);
     unsafe {
         hf_emit(
-            caller_id_addr,
-            caller_id.len() as i32,
-            method_addr,
-            method.len() as i32,
-            data_addr,
-            data.len() as i32,
+            event_name_addr,
+            event_name.len() as i32,
+            event_data_addr,
+            event_data.len() as i32,
         );
     }
 }
