@@ -138,7 +138,6 @@ macro_rules! log {
 #[macro_export]
 macro_rules! emit_data_mp {
     ($event_name:expr, $event_data:expr) => {
-        $crate::rmp_serialize($event_data)
-            .and_then(|buf| Ok($crate::emit_data($event_name, &buf)));
+        $crate::rmp_serialize($event_data).and_then(|buf| Ok($crate::emit_data($event_name, &buf)));
     };
 }
