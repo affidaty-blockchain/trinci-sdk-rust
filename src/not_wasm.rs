@@ -25,6 +25,7 @@ use crate::{
     tai::{Asset, AssetLockArgs, AssetTransferArgs, LockPrivilege, LockType},
 };
 use serde::{de::DeserializeOwned, Serialize};
+use sha2::{Digest, Sha256};
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
 const MEMORY_SIZE: usize = 16384;
@@ -283,6 +284,17 @@ pub extern "C" fn hf_store_asset(
     let dst_id = unsafe { std::str::from_utf8_unchecked(buf) };
     let value = slice_from_mem(value_addr, value_size);
     set_account_asset(dst_id, ctx.owner, value);
+}
+
+#[no_mangle]
+pub extern "C" fn hf_sha256(data_addr: i32, data_size: i32) -> WasmSlice {
+    let data = slice_from_mem(data_addr, data_size);
+
+    let mut hasher = Sha256::new();
+    hasher.update(data);
+    let digest = hasher.finalize();
+
+    slice_to_wslice(digest.as_ref())
 }
 
 // Use the first byte of the sign to return success or error.

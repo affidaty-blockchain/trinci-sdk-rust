@@ -76,6 +76,9 @@ extern "C" {
         data_size: i32,
     ) -> WasmSlice;
 
+    /// Sha256 host function
+    fn hf_sha256(data_addr: i32, data_size: i32) -> WasmSlice;
+
 }
 
 /// Logging facility for smart contracts.
@@ -166,6 +169,13 @@ pub fn verify(pk: &PublicKey, data: &[u8], sign: &[u8]) -> bool {
             sign.len() as i32,
         ) == 1
     }
+}
+
+/// Calculates the Sha256 hash of the data
+pub fn sha256(data: &[u8]) -> Vec<u8> {
+    let data_addr = slice_to_mem(data);
+    let wslice = unsafe { hf_sha256(data_addr, data.len() as i32) };
+    slice_from_wslice(wslice).to_vec()
 }
 
 /// Call a method of an arbitrary smart contract passing the data as argument

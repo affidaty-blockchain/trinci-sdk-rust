@@ -84,7 +84,6 @@ impl Hash {
                 let mut hasher = Sha256::new();
                 hasher.update(data);
                 let digest = hasher.finalize();
-                // let digest = digest::digest(&digest::SHA256, data);
                 Hash::new(alg, digest.as_ref())
             }
             HashAlgorithm::Identity => Hash::new(alg, data),
