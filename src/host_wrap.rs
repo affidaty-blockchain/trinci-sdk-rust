@@ -56,6 +56,9 @@ extern "C" {
     /// Raw store_asset host funtion
     fn hf_store_asset(id_addr: i32, id_size: i32, value_addr: i32, value_size: i32);
 
+    /// Raw get account contract host funtion
+    fn hf_get_account_contract(id_addr: i32, id_size: i32) -> WasmSlice;
+
     /// Raw verify host funtion
     fn hf_verify(
         pk_addr: i32,
@@ -107,6 +110,13 @@ pub fn emit_data(event_name: &str, event_data: &[u8]) {
 pub fn load_data(key: &str) -> Vec<u8> {
     let key_addr = slice_to_mem(key.as_bytes());
     let wslice = unsafe { hf_load_data(key_addr, key.len() as i32) };
+    slice_from_wslice(wslice).to_vec()
+}
+
+/// Get the account contract to the given account id
+pub fn get_account_contract(id: &str) -> Vec<u8> {
+    let id_addr = slice_to_mem(id.as_bytes());
+    let wslice = unsafe { hf_get_account_contract(id_addr, id.len() as i32) };
     slice_from_wslice(wslice).to_vec()
 }
 

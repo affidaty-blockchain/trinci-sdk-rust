@@ -21,7 +21,7 @@
 use crate::{
     common::*,
     core::{AppOutput, PublicKey},
-    host_wrap::{load_asset_typed, store_asset_typed},
+    host_wrap::{get_account_contract, load_asset_typed, store_asset_typed},
     tai::{Asset, AssetLockArgs, AssetTransferArgs, LockPrivilege, LockType},
 };
 use serde::{de::DeserializeOwned, Serialize};
@@ -252,6 +252,14 @@ pub extern "C" fn hf_load_data(key_addr: i32, key_size: i32) -> WasmSlice {
     let buf = slice_from_mem(key_addr, key_size);
     let key = unsafe { std::str::from_utf8_unchecked(buf) };
     let buf = get_account_data(ctx.owner, key);
+    slice_to_wslice(&buf)
+}
+
+#[no_mangle]
+pub extern "C" fn hf_get_account_contract(id_addr: i32, id_size: i32) -> WasmSlice {
+    let buf = slice_from_mem(id_addr, id_size);
+    let account_id = unsafe { std::str::from_utf8_unchecked(buf) };
+    let buf = get_account_contract(account_id);
     slice_to_wslice(&buf)
 }
 
