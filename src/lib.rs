@@ -38,9 +38,9 @@ pub use common::{
     Serializable, WasmError, WasmResult,
 };
 pub use host_wrap::{
-    asset_balance, asset_lock, asset_transfer, call, emit_data, get_data_keys, load_asset,
-    load_asset_typed, load_data, log, remove_data, sha256, store_asset, store_asset_typed,
-    store_data, verify,
+    asset_balance, asset_lock, asset_transfer, call, emit_data, get_account_contract,
+    get_data_keys, load_asset, load_asset_typed, load_data, log, remove_data, sha256, store_asset,
+    store_asset_typed, store_data, verify,
 };
 
 // Testing helpers on not wasm environments.
