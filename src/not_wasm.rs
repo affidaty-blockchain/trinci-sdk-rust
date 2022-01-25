@@ -21,7 +21,7 @@
 use crate::{
     common::*,
     core::{AppOutput, PublicKey},
-    host_wrap::{get_account_contract, load_asset_typed, store_asset_typed},
+    host_wrap::{load_asset_typed, store_asset_typed},
     tai::{Asset, AssetLockArgs, AssetTransferArgs, LockPrivilege, LockType},
 };
 use serde::{de::DeserializeOwned, Serialize};
@@ -42,6 +42,7 @@ type ContractFunc = fn(AppContext, PackedValue) -> WasmResult<PackedValue>;
 struct Account {
     assets: HashMap<String, Vec<u8>>,
     data: HashMap<String, Vec<u8>>,
+    contract: Vec<u8>,
 }
 
 struct ThreadData {
@@ -101,6 +102,20 @@ fn get_account<'a>(accounts: &'a mut HashMap<String, Account>, id: &str) -> &'a 
         accounts.insert(id.to_owned(), Account::default());
     }
     accounts.get_mut(id).unwrap()
+}
+
+pub fn get_account_contract(account_id: &str) -> Vec<u8> {
+    let dat = thread_data();
+    let accounts = &mut dat.borrow_mut().accounts;
+    let account = get_account(accounts, account_id);
+    account.contract.clone()
+}
+
+pub fn set_account_contract(account_id: &str, contract: Vec<u8>) {
+    let dat = thread_data();
+    let accounts = &mut dat.borrow_mut().accounts;
+    let account = get_account(accounts, account_id);
+    account.contract = contract;
 }
 
 pub fn get_account_data(src_id: &str, key: &str) -> Vec<u8> {
