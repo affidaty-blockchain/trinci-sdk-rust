@@ -56,8 +56,11 @@ extern "C" {
     /// Raw store_asset host funtion
     fn hf_store_asset(id_addr: i32, id_size: i32, value_addr: i32, value_size: i32);
 
-    /// Raw get account contract host funtion
+    /// Raw get_account_contract host funtion
     fn hf_get_account_contract(id_addr: i32, id_size: i32) -> WasmSlice;
+
+    /// Raw is_callable host function
+    fn hf_is_callable(id_addr: i32, id_size: i32, method_addr: i32, method_size: i32) -> i32;
 
     /// Raw verify host funtion
     fn hf_verify(
@@ -118,6 +121,13 @@ pub fn get_account_contract(id: &str) -> Vec<u8> {
     let id_addr = slice_to_mem(id.as_bytes());
     let wslice = unsafe { hf_get_account_contract(id_addr, id.len() as i32) };
     slice_from_wslice(wslice).to_vec()
+}
+
+/// Check if the given account has a contract with a specific method
+pub fn is_callable(id: &str, method: &str) -> i32 {
+    let id_addr = slice_to_mem(id.as_bytes());
+    let method_addr = slice_to_mem(method.as_bytes());
+    unsafe { hf_is_callable(id_addr, id.len() as i32, method_addr, method.len() as i32) }
 }
 
 /// Get the account keys.
