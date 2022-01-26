@@ -149,14 +149,14 @@ where
 /// It returns a vector with the resultant outcome for each devision.
 /// In case of reminder, it's given to the first division result.
 pub fn divide(number: u64, dividers: &[u64]) -> WasmResult<Vec<u64>> {
-    let total: u64 = dividers.iter().sum();
+    let total: u128 = dividers.iter().map(|val| *val as u128).sum();
     if total == 0 {
         return Err(WasmError::new("nothing to divide"));
     }
     let mut result: Vec<u64> = vec![];
 
     for divider in dividers {
-        let percentual = ((number as u128 * *divider as u128) / total as u128) as u64;
+        let percentual = ((number as u128 * *divider as u128) / total) as u64;
         result.push(percentual);
     }
 
@@ -265,7 +265,7 @@ mod tests {
         let mut dividers = Vec::<u64>::new();
 
         for _ in 0..max {
-            dividers.push(rand::random::<u8>() as u64);
+            dividers.push(rand::random::<u64>() as u64);
         }
 
         let res = divide(value, &dividers).unwrap();
