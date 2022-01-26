@@ -34,8 +34,8 @@ pub mod hash;
 pub use serde_value::{value, Value};
 
 pub use common::{
-    rmp_deserialize, rmp_serialize, rmp_serialize_named, AppContext, Deserializable, PackedValue,
-    Serializable, WasmError, WasmResult,
+    divide, rmp_deserialize, rmp_serialize, rmp_serialize_named, AppContext, Deserializable,
+    PackedValue, Serializable, WasmError, WasmResult,
 };
 pub use host_wrap::{
     asset_balance, asset_lock, asset_transfer, call, emit_data, get_data_keys, load_asset,

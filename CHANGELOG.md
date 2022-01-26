@@ -33,4 +33,4 @@ Additional labels for pre-release metadata:
 Added:
 
 * sha256 host function facilitator
-
+* divide method to split an amount among various entities
