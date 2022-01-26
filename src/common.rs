@@ -145,6 +145,30 @@ where
     rmp_serde::from_slice(buf).map_err(|_err| WasmError::new("deserialization failure"))
 }
 
+/// Tool to divide a number by handling the reminder.
+/// It returns a vector with the resultant outcome for each devision.
+/// In case of reminder, it's given to the first division result.
+pub fn divide(number: u64, dividers: &[u64]) -> WasmResult<Vec<u64>> {
+    let total: u64 = dividers.iter().sum();
+    if total == 0 {
+        return Err(WasmError::new("nothing to divide"));
+    }
+    let mut result: Vec<u64> = vec![];
+
+    for divider in dividers {
+        let percentual = ((number as u128 * *divider as u128) / total as u128) as u64;
+        result.push(percentual);
+    }
+
+    let accumulator: u64 = result.iter().sum();
+
+    if accumulator < number {
+        result[0] += number - accumulator;
+    }
+
+    Ok(result)
+}
+
 /// Value that has been already packed, thus it doesn't require further
 /// processing and shall be taken "as-is".
 #[derive(Default, Debug)]
@@ -189,5 +213,63 @@ impl<'a, T: Deserialize<'a>> Deserializable<'a> for T {
 impl Deserializable<'_> for PackedValue {
     fn deserialize(buf: &'_ [u8]) -> WasmResult<Self> {
         Ok(PackedValue(buf.to_vec()))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::divide;
+    extern crate rand;
+
+    #[test]
+    fn test_divide_empty_dividers() {
+        let dividers: Vec<u64> = vec![];
+
+        let err = divide(100, &dividers).unwrap_err();
+
+        assert_eq!(err.to_string(), "nothing to divide");
+    }
+
+    #[test]
+    fn test_divide_zero() {
+        let dividers: Vec<u64> = vec![2, 4];
+
+        let res = divide(0, &dividers).unwrap();
+
+        assert_eq!(res, vec![0u64; 2]);
+    }
+
+    #[test]
+    fn test_divide() {
+        let dividers: Vec<u64> = vec![33, 33, 33];
+
+        let res = divide(100, &dividers).unwrap();
+
+        assert_eq!(res, vec![34, 33, 33]);
+    }
+
+    #[test]
+    fn test_divide_3() {
+        let dividers: Vec<u64> = vec![1, 2, 3];
+
+        let res = divide(60, &dividers).unwrap();
+
+        assert_eq!(res, vec![10, 20, 30]);
+    }
+
+    #[test]
+    fn test_divide_random() {
+        let max = rand::random::<u8>();
+        let value = rand::random::<u64>();
+
+        let mut dividers = Vec::<u64>::new();
+
+        for _ in 0..max {
+            dividers.push(rand::random::<u8>() as u64);
+        }
+
+        let res = divide(value, &dividers).unwrap();
+
+        assert_eq!(res.iter().fold(0, |acc, &val| acc + val), value);
     }
 }
