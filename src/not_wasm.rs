@@ -42,6 +42,7 @@ type ContractFunc = fn(AppContext, PackedValue) -> WasmResult<PackedValue>;
 struct Account {
     assets: HashMap<String, Vec<u8>>,
     data: HashMap<String, Vec<u8>>,
+    contract: Vec<u8>,
 }
 
 struct ThreadData {
@@ -101,6 +102,30 @@ fn get_account<'a>(accounts: &'a mut HashMap<String, Account>, id: &str) -> &'a 
         accounts.insert(id.to_owned(), Account::default());
     }
     accounts.get_mut(id).unwrap()
+}
+
+pub fn get_account_contract(account_id: &str) -> Vec<u8> {
+    let dat = thread_data();
+    let accounts = &mut dat.borrow_mut().accounts;
+    let account = get_account(accounts, account_id);
+    account.contract.clone()
+}
+
+pub fn is_callable(account_id: &str, method: &str) -> i32 {
+    let dat = thread_data();
+    let methods = &mut dat.borrow_mut().contract_methods;
+    let key = format!("{}:{}", account_id, method);
+    match methods.contains_key(&key) {
+        true => 1,
+        false => 0,
+    }
+}
+
+pub fn set_account_contract(account_id: &str, contract: Vec<u8>) {
+    let dat = thread_data();
+    let accounts = &mut dat.borrow_mut().accounts;
+    let account = get_account(accounts, account_id);
+    account.contract = contract;
 }
 
 pub fn get_account_data(src_id: &str, key: &str) -> Vec<u8> {
@@ -253,6 +278,28 @@ pub extern "C" fn hf_load_data(key_addr: i32, key_size: i32) -> WasmSlice {
     let key = unsafe { std::str::from_utf8_unchecked(buf) };
     let buf = get_account_data(ctx.owner, key);
     slice_to_wslice(&buf)
+}
+
+#[no_mangle]
+pub extern "C" fn hf_get_account_contract(id_addr: i32, id_size: i32) -> WasmSlice {
+    let buf = slice_from_mem(id_addr, id_size);
+    let account_id = unsafe { std::str::from_utf8_unchecked(buf) };
+    let buf = get_account_contract(account_id);
+    slice_to_wslice(&buf)
+}
+
+#[no_mangle]
+pub extern "C" fn hf_is_callable(
+    id_addr: i32,
+    id_size: i32,
+    method_addr: i32,
+    method_size: i32,
+) -> i32 {
+    let buf = slice_from_mem(id_addr, id_size);
+    let account_id = unsafe { std::str::from_utf8_unchecked(buf) };
+    let buf = slice_from_mem(method_addr, method_size);
+    let method = unsafe { std::str::from_utf8_unchecked(buf) };
+    is_callable(account_id, method)
 }
 
 #[no_mangle]
