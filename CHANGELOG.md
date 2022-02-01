@@ -27,7 +27,15 @@ Additional labels for pre-release metadata:
 * rc.x: stable release candidate.
 
 
-0.2.4 unreleased
+0.2.5 unreleased
+----------------
+* hf_get_account_contract host function
+* get_account_contract facilitator
+* hf_is_callable host function
+* is_callable facilitator
+
+
+0.2.4 release skipped
 ----------------
 
 Added:
