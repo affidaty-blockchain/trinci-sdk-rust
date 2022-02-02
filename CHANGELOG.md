@@ -27,7 +27,7 @@ Additional labels for pre-release metadata:
 * rc.x: stable release candidate.
 
 
-0.2.5 unreleased
+0.2.5 02-02-2022
 ----------------
 * hf_get_account_contract host function
 * get_account_contract facilitator
