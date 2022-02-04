@@ -82,6 +82,18 @@ extern "C" {
         data_size: i32,
     ) -> WasmSlice;
 
+    /// Raw secure call host funtion
+    fn hf_s_call(
+        account_addr: i32,
+        account_size: i32,
+        contract_offset: i32,
+        contract_size: i32,
+        method_addr: i32,
+        method_size: i32,
+        data_addr: i32,
+        data_size: i32,
+    ) -> WasmSlice;
+
     /// Sha256 host function
     fn hf_sha256(data_addr: i32, data_size: i32) -> WasmSlice;
 
@@ -207,6 +219,35 @@ pub fn call(account: &str, method: &str, data: &[u8]) -> WasmResult<Vec<u8>> {
         hf_call(
             account_addr,
             account.len() as i32,
+            method_addr,
+            method.len() as i32,
+            data_addr,
+            data.len() as i32,
+        )
+    };
+    let buf = slice_from_wslice(wslice);
+    let result: AppOutput = rmp_deserialize(buf)?;
+    match result.success {
+        true => Ok(result.data.to_owned()),
+        false => {
+            let msg = String::from_utf8_lossy(result.data);
+            Err(WasmError::new(&msg))
+        }
+    }
+}
+
+/// Call a method of an arbitrary smart contract passing the data as argument
+pub fn s_call(account: &str, contract: &[u8], method: &str, data: &[u8]) -> WasmResult<Vec<u8>> {
+    let account_addr = slice_to_mem(account.as_bytes());
+    let contract_addr = slice_to_mem(contract);
+    let method_addr = slice_to_mem(method.as_bytes());
+    let data_addr = slice_to_mem(data);
+    let wslice = unsafe {
+        hf_s_call(
+            account_addr,
+            account.len() as i32,
+            contract_addr,
+            contract.len() as i32,
             method_addr,
             method.len() as i32,
             data_addr,

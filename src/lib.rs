@@ -39,8 +39,8 @@ pub use common::{
 };
 pub use host_wrap::{
     asset_balance, asset_lock, asset_transfer, call, emit_data, get_account_contract,
-    get_data_keys, is_callable, load_asset, load_asset_typed, load_data, log, remove_data, sha256,
-    store_asset, store_asset_typed, store_data, verify,
+    get_data_keys, is_callable, load_asset, load_asset_typed, load_data, log, remove_data, s_call,
+    sha256, store_asset, store_asset_typed, store_data, verify,
 };
 
 // Testing helpers on not wasm environments.

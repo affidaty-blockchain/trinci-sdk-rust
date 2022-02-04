@@ -184,6 +184,14 @@ pub fn set_contract_method(account_id: &str, method: &str, func: ContractFunc) {
     methods.insert(key, func);
 }
 
+/// Register a contract hash to an account.
+pub fn set_contract_hash(account_id: &str, contract: &[u8]) {
+    let dat = thread_data();
+    let accounts = &mut dat.borrow_mut().accounts;
+    let account = get_account(accounts, account_id);
+    account.contract = contract.to_vec();
+}
+
 pub fn memory_base() -> usize {
     thread_data().borrow().memory.buf.as_ptr() as usize
 }
@@ -374,23 +382,62 @@ pub extern "C" fn hf_call(
     data_addr: i32,
     data_size: i32,
 ) -> WasmSlice {
+    let buf = Vec::<u8>::new();
+    let contract_addr = slice_to_mem(&buf);
+    hf_s_call(
+        account_addr,
+        account_size,
+        contract_addr,
+        0,
+        method_addr,
+        method_size,
+        data_addr,
+        data_size,
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn hf_s_call(
+    account_addr: i32,
+    account_size: i32,
+    contract_addr: i32,
+    contract_size: i32,
+    method_addr: i32,
+    method_size: i32,
+    data_addr: i32,
+    data_size: i32,
+) -> WasmSlice {
     let ctx: &AppContext = get_app_ctx();
     let slice = slice_from_mem(account_addr, account_size);
     let account = unsafe { std::str::from_utf8_unchecked(slice) };
+    let contract = slice_from_mem(contract_addr, contract_size).to_owned();
     let slice = slice_from_mem(method_addr, method_size);
     let method = unsafe { std::str::from_utf8_unchecked(slice) };
-    let slice = slice_from_mem(data_addr, data_size).to_owned();
+    let args = slice_from_mem(data_addr, data_size).to_owned();
 
     println!(
-        "[call] - {}::{}({})",
+        "[s_call] - {}::{}::{}({})",
         account,
+        hex::encode(contract.clone()),
         method,
-        hex::encode(slice.clone())
+        hex::encode(args.clone())
     );
 
     let method_func = {
         let method_name = format!("{}:{}", account, method);
         let dat = thread_data();
+
+        if !contract.is_empty() {
+            let val = match &dat.borrow().accounts.get(account) {
+                Some(acc) => acc.contract == contract,
+
+                None => false, // return AppOutput::ko("incompatible contract app").into(),
+            };
+            if !val {
+                return AppOutput::ko("incompatible contract app").into();
+            }
+        }
+
         let method_func = {
             let map = &dat.borrow().contract_methods;
             map.get(&method_name).copied()
@@ -413,7 +460,7 @@ pub extern "C" fn hf_call(
     };
 
     set_app_ctx(&ctx);
-    let result = match method_func(ctx, PackedValue(slice)) {
+    let result = match method_func(ctx, PackedValue(args)) {
         Ok(res) => AppOutput::ok(res.as_ref()).into(),
         Err(err) => AppOutput::ko(&err.to_string()).into(),
     };
