@@ -27,7 +27,7 @@ use serde::{de::DeserializeOwned, Serialize};
 
 /// Host functions imported
 extern "C" {
-    /// Raw log host funtion
+    /// Raw log host function
     fn hf_log(msg_addr: i32, msg_size: i32);
 
     /// Raw emit host function
@@ -41,28 +41,28 @@ extern "C" {
     /// Raw get_keys host function
     fn hf_get_keys(pattern_addr: i32, pattern_size: i32) -> WasmSlice;
 
-    /// Raw store_data host funtion
+    /// Raw store_data host function
     fn hf_store_data(key_addr: i32, key_size: i32, data_addr: i32, data_size: i32);
 
-    /// Raw load_data host funtion
+    /// Raw load_data host function
     fn hf_load_data(key_addr: i32, key_size: i32) -> WasmSlice;
 
-    /// Raw remove_data host funtion
+    /// Raw remove_data host function
     fn hf_remove_data(key_addr: i32, key_size: i32);
 
-    /// Raw load asset host funtion
+    /// Raw load asset host function
     fn hf_load_asset(id_addr: i32, id_size: i32) -> WasmSlice;
 
-    /// Raw store_asset host funtion
+    /// Raw store_asset host function
     fn hf_store_asset(id_addr: i32, id_size: i32, value_addr: i32, value_size: i32);
 
-    /// Raw get_account_contract host funtion
+    /// Raw get_account_contract host function
     fn hf_get_account_contract(id_addr: i32, id_size: i32) -> WasmSlice;
 
     /// Raw is_callable host function
     fn hf_is_callable(id_addr: i32, id_size: i32, method_addr: i32, method_size: i32) -> i32;
 
-    /// Raw verify host funtion
+    /// Raw verify host function
     fn hf_verify(
         pk_addr: i32,
         pk_size: i32,
@@ -72,7 +72,7 @@ extern "C" {
         sign_size: i32,
     ) -> i32;
 
-    /// Raw call host funtion
+    /// Raw call host function
     fn hf_call(
         account_addr: i32,
         account_size: i32,
@@ -82,7 +82,7 @@ extern "C" {
         data_size: i32,
     ) -> WasmSlice;
 
-    /// Raw secure call host funtion
+    /// Raw secure call host function
     fn hf_s_call(
         account_addr: i32,
         account_size: i32,
@@ -96,6 +96,9 @@ extern "C" {
 
     /// Sha256 host function
     fn hf_sha256(data_addr: i32, data_size: i32) -> WasmSlice;
+
+    /// Drand host function
+    fn hf_drand(max: u64) -> u64;
 
 }
 
@@ -201,6 +204,11 @@ pub fn verify(pk: &PublicKey, data: &[u8], sign: &[u8]) -> bool {
             sign.len() as i32,
         ) == 1
     }
+}
+
+/// Calculate a random number for the blockchain
+pub fn drand(max: u64) -> u64 {
+    unsafe { hf_drand(max) }
 }
 
 /// Calculates the Sha256 hash of the data

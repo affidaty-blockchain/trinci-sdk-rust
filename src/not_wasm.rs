@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TRINCI. If not, see <https://www.gnu.org/licenses/>.
 
-//! Collection of support structures and fuctions when the smart contract is not run within the
+//! Collection of support structures and functions when the smart contract is not run within the
 //! wasm machine.
 
 use crate::{
@@ -350,6 +350,11 @@ pub extern "C" fn hf_sha256(data_addr: i32, data_size: i32) -> WasmSlice {
     let digest = hasher.finalize();
 
     slice_to_wslice(digest.as_ref())
+}
+
+#[no_mangle]
+pub extern "C" fn hf_drand(max: u64) -> u64 {
+    max / 2
 }
 
 // Use the first byte of the sign to return success or error.
