@@ -284,7 +284,7 @@ pub fn asset_balance(asset: &str) -> WasmResult<u64> {
 ///
 /// This is an helper function over the lower level `call(asset_id, "transfer", args)`.
 pub fn asset_transfer(from: &str, to: &str, asset: &str, units: u64) -> WasmResult<()> {
-    let data = rmp_serialize(&AssetTransferArgs { from, to, units })?;
+    let data = rmp_serialize_named(&AssetTransferArgs { from, to, units })?;
     call(asset, "transfer", &data).map(|_buf| ())
 }
 
