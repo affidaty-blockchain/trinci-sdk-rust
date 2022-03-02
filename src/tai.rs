@@ -90,6 +90,9 @@ pub struct AssetTransferArgs<'a> {
     pub from: &'a str,
     pub to: &'a str,
     pub units: u64,
+    #[serde(with = "serde_bytes")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub data: Option<Vec<u8>>,
 }
 
 /// Arguments for the asset `balance` method.
@@ -114,6 +117,7 @@ mod tests {
             from: "QmTeNPcQnoxinb9bcQhuFxteTQ4sN3qSWJNoHjgEr84zNY",
             to: "QmZKrfoq8ZtkH445373qFQo8mJUEc1jx1avMLY9JRTMJMD",
             units: 123,
+            data: None,
         }
     }
 
