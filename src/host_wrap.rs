@@ -284,7 +284,37 @@ pub fn asset_balance(asset: &str) -> WasmResult<u64> {
 ///
 /// This is an helper function over the lower level `call(asset_id, "transfer", args)`.
 pub fn asset_transfer(from: &str, to: &str, asset: &str, units: u64) -> WasmResult<()> {
-    let data = rmp_serialize(&AssetTransferArgs { from, to, units })?;
+    let data = rmp_serialize_named(&AssetTransferArgs {
+        from,
+        to,
+        units,
+        data: None,
+    })?;
+    call(asset, "transfer", &data).map(|_buf| ())
+}
+
+/// Transfer an amount of asset units to a destination account with accessory data.
+///
+/// This is an helper function over the lower level `call(asset_id, "transfer", args)`.
+pub fn adv_asset_transfer(
+    from: &str,
+    to: &str,
+    asset: &str,
+    units: u64,
+    data: &[u8],
+) -> WasmResult<()> {
+    let data = if data.is_empty() {
+        None
+    } else {
+        Some(data.to_vec())
+    };
+
+    let data = rmp_serialize_named(&AssetTransferArgs {
+        from,
+        to,
+        units,
+        data,
+    })?;
     call(asset, "transfer", &data).map(|_buf| ())
 }
 
