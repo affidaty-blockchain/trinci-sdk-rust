@@ -38,7 +38,7 @@ macro_rules! app_export {
                         Serializable::serialize(&output)
                     },
                 )*
-                _ => Err($crate::WasmError::new(&format!("method `{}` not found", ctx.method))),
+                _ => Err($crate::WasmError::new(&format!("method not found"))),
             }
         }
     };
