@@ -31,6 +31,9 @@ Additional labels for pre-release metadata:
 Added
 * drand host function facilitator
 
+Changed
+* `is_callable` now returns a boolean
+
 0.2.7-rc1 16-02-2022
 ----------------
 Added

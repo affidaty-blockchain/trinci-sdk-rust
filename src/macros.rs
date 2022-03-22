@@ -22,6 +22,10 @@
 /// Helper macro to construct the application entry point.
 ///
 /// The `input` and `output` values are encoded using MessagePack format.
+
+/// Helper macro to construct the application entry point.
+///
+/// The `input` and `output` values are encoded using MessagePack format.
 #[macro_export]
 macro_rules! app_export {
     ($($fun:expr),*) => {
@@ -38,8 +42,24 @@ macro_rules! app_export {
                         Serializable::serialize(&output)
                     },
                 )*
-                _ => Err($crate::WasmError::new(&format!("method not found"))),
+                _ => Err($crate::WasmError::new("method not found")),
             }
+        }
+
+        #[no_mangle]
+        /// Check if a method is callable on this smart contract
+        /// Returns 0 if the method is not callable, 1 otherwise
+        fn is_callable_internal(ctx: $crate::AppContext, buf: &[u8]) -> i32 {
+            let mut methods = Vec::<String>::new();
+                $(
+                    methods.push(stringify!($fun).to_string());
+                )*
+
+                let method = String::from_utf8_lossy(&buf).to_string();
+                if methods.contains(&method) {
+                    return 1;
+                }
+                return 0;
         }
     };
 }
@@ -114,7 +134,7 @@ macro_rules! get_value_as_u64 {
     };
 }
 
-/// Get an `array` reference from a `json_serde::Valu` by key.
+/// Get an `array` reference from a `json_serde::Value` by key.
 #[macro_export]
 macro_rules! get_value_as_array {
     ($value:expr, $index:expr) => {

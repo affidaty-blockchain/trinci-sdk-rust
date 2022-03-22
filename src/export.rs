@@ -34,6 +34,9 @@ extern "C" fn alloc(len: usize) -> *mut u8 {
 extern "Rust" {
     #[doc(hidden)]
     fn app_run(ctx: AppContext, args: &[u8]) -> Result<Vec<u8>, WasmError>;
+
+    #[doc(hidden)]
+    fn is_callable_internal(ctx: AppContext, buf: &[u8]) -> i32;
 }
 
 impl<'a> AppOutput<'a> {
@@ -79,6 +82,19 @@ extern "C" fn run(ctx_addr: i32, ctx_size: i32, args_addr: i32, args_size: i32) 
         Ok(buf) => AppOutput::ok(&buf).into(),
         Err(err) => AppOutput::ko(&err.to_string()).into(),
     }
+}
+
+#[no_mangle]
+extern "C" fn is_callable(ctx_addr: i32, ctx_size: i32, method_addr: i32, method_size: i32) -> i32 {
+    let slice = slice_from_mem(ctx_addr, ctx_size);
+    let ctx: AppInput = match rmp_deserialize(slice) {
+        Ok(value) => value,
+        Err(_err) => return 0,
+    };
+
+    let method = slice_from_mem(method_addr, method_size);
+
+    unsafe { is_callable_internal(ctx, method) }
 }
 
 #[cfg(not(target_arch = "wasm32"))]

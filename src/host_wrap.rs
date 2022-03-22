@@ -139,10 +139,13 @@ pub fn get_account_contract(id: &str) -> Vec<u8> {
 }
 
 /// Check if the given account has a contract with a specific method
-pub fn is_callable(id: &str, method: &str) -> i32 {
+pub fn is_callable(id: &str, method: &str) -> bool {
     let id_addr = slice_to_mem(id.as_bytes());
     let method_addr = slice_to_mem(method.as_bytes());
-    unsafe { hf_is_callable(id_addr, id.len() as i32, method_addr, method.len() as i32) }
+    matches!(
+        unsafe { hf_is_callable(id_addr, id.len() as i32, method_addr, method.len() as i32) },
+        1
+    )
 }
 
 /// Get the account keys.

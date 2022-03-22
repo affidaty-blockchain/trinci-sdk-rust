@@ -30,7 +30,7 @@ pub type WasmResult<T> = std::result::Result<T, WasmError>;
 
 /// Project-wide error type.
 /// Contains a kind enumerate and a `source` to identify the subsystem that may
-/// have propageted the error.
+/// have propagated the error.
 #[derive(Debug)]
 pub struct WasmError(String);
 
@@ -146,7 +146,7 @@ where
 }
 
 /// Tool to divide a number by handling the reminder.
-/// It returns a vector with the resultant outcome for each devision.
+/// It returns a vector with the resultant outcome for each division.
 /// In case of reminder, it's given to the first division result.
 pub fn divide(number: u64, dividers: &[u64]) -> WasmResult<Vec<u64>> {
     let total: u128 = dividers.iter().map(|val| *val as u128).sum();
