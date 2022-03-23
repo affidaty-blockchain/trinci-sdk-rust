@@ -219,7 +219,6 @@ impl Deserializable<'_> for PackedValue {
 #[cfg(test)]
 mod tests {
     use crate::divide;
-    extern crate rand;
 
     #[test]
     fn test_divide_empty_dividers() {
