@@ -20,7 +20,7 @@
 use crate::ecdsa;
 use serde::{Deserialize, Serialize};
 
-/// Structure passet from the host to the wasm smart contracts.
+/// Structure passed from the host to the wasm smart contracts.
 ///
 /// **WARNING:** ANY MODIFICATION CAN BREAK COMPATIBILITY WITH THE CORE.
 #[derive(Serialize, Deserialize)]
