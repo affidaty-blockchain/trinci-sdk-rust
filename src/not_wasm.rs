@@ -501,6 +501,27 @@ pub fn asset_transfer(_ctx: AppContext, args: PackedValue) -> WasmResult<PackedV
     Ok(PackedValue(buf))
 }
 
+/// Mocked Advanced Asset `transfer` method used by the tests.
+pub fn adv_asset_transfer(_ctx: AppContext, args: PackedValue) -> WasmResult<PackedValue> {
+    let args: AssetTransferArgs = rmp_deserialize(&args).unwrap();
+
+    // Withdraw
+    let mut value_units: u64 = load_asset_typed(args.from);
+    if value_units < args.units {
+        return Err(WasmError::new("error during transfer"));
+    }
+    value_units -= args.units;
+    store_asset_typed(args.from, value_units);
+
+    // Deposit
+    let mut value_units: u64 = load_asset_typed(args.to);
+    value_units += args.units;
+    store_asset_typed(args.to, value_units);
+
+    let buf = rmp_serialize(&()).unwrap();
+    Ok(PackedValue(buf))
+}
+
 /// Mocked TAI Asset `balance` method used by the tests.
 pub fn asset_balance(ctx: AppContext, _args: PackedValue) -> WasmResult<PackedValue> {
     let value: Asset = load_asset_typed(ctx.caller);

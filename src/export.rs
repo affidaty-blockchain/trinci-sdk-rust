@@ -142,7 +142,7 @@ pub mod tests {
         );
 
         let slice = slice_from_wslice(wslice);
-        let res: AppOutput = rmp_serde::from_read_ref(slice).unwrap();
+        let res: AppOutput = rmp_serde::from_slice(slice).unwrap();
 
         match res.success {
             true => match rmp_deserialize(res.data) {

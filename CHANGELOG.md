@@ -30,6 +30,7 @@ Additional labels for pre-release metadata:
 --------------------
 Added
 * drand host function facilitator
+* `advanced_asset_transfer` mocked method for test
 
 Changed
 * `is_callable` now returns a boolean
