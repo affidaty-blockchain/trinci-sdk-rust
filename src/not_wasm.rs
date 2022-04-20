@@ -501,6 +501,16 @@ pub fn asset_transfer(_ctx: AppContext, args: PackedValue) -> WasmResult<PackedV
     Ok(PackedValue(buf))
 }
 
+/// Mocked TAI Asset `balance` method used by the tests.
+pub fn asset_balance(ctx: AppContext, _args: PackedValue) -> WasmResult<PackedValue> {
+    let value: Asset = load_asset_typed(ctx.caller);
+    if value.lock.is_some() {
+        return Err(WasmError::new("account locked"));
+    }
+    let buf = rmp_serialize(&value.units).unwrap();
+    Ok(PackedValue(buf))
+}
+
 /// Mocked Advanced Asset `transfer` method used by the tests.
 pub fn adv_asset_transfer(_ctx: AppContext, args: PackedValue) -> WasmResult<PackedValue> {
     let args: AssetTransferArgs = rmp_deserialize(&args).unwrap();
@@ -523,12 +533,9 @@ pub fn adv_asset_transfer(_ctx: AppContext, args: PackedValue) -> WasmResult<Pac
 }
 
 /// Mocked TAI Asset `balance` method used by the tests.
-pub fn asset_balance(ctx: AppContext, _args: PackedValue) -> WasmResult<PackedValue> {
-    let value: Asset = load_asset_typed(ctx.caller);
-    if value.lock.is_some() {
-        return Err(WasmError::new("account locked"));
-    }
-    let buf = rmp_serialize(&value.units).unwrap();
+pub fn adv_asset_balance(ctx: AppContext, _args: PackedValue) -> WasmResult<PackedValue> {
+    let value: u64 = load_asset_typed(ctx.caller);
+    let buf = rmp_serialize(&value).unwrap();
     Ok(PackedValue(buf))
 }
 
