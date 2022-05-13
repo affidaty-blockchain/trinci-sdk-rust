@@ -166,6 +166,13 @@ pub fn set_account_asset(dst_id: &str, asset: &str, value: &[u8]) {
     account.assets.insert(asset.to_owned(), value.to_owned());
 }
 
+pub fn remove_account_asset(dst_id: &str, asset: &str) {
+    let dat = thread_data();
+    let accounts = &mut dat.borrow_mut().accounts;
+    let account = get_account(accounts, dst_id);
+    account.assets.remove(asset);
+}
+
 pub fn get_account_asset_gen<T: DeserializeOwned + Default>(src_id: &str, asset_id: &str) -> T {
     let buf = get_account_asset(src_id, asset_id);
     rmp_deserialize(&buf).unwrap_or_default()
@@ -339,6 +346,14 @@ pub extern "C" fn hf_store_asset(
     let dst_id = unsafe { std::str::from_utf8_unchecked(buf) };
     let value = slice_from_mem(value_addr, value_size);
     set_account_asset(dst_id, ctx.owner, value);
+}
+
+#[no_mangle]
+pub extern "C" fn hf_remove_asset(dst_id_addr: i32, dst_id_size: i32) {
+    let ctx: &AppContext = get_app_ctx();
+    let buf = slice_from_mem(dst_id_addr, dst_id_size);
+    let dst_id = unsafe { std::str::from_utf8_unchecked(buf) };
+    remove_account_asset(dst_id, ctx.owner);
 }
 
 #[no_mangle]

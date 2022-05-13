@@ -56,6 +56,9 @@ extern "C" {
     /// Raw store_asset host function
     fn hf_store_asset(id_addr: i32, id_size: i32, value_addr: i32, value_size: i32);
 
+    /// Raw delete_asset host function
+    fn hf_remove_asset(id_addr: i32, id_size: i32);
+
     /// Raw get_account_contract host function
     fn hf_get_account_contract(id_addr: i32, id_size: i32) -> WasmSlice;
 
@@ -180,11 +183,17 @@ pub fn load_asset(id: &str) -> Vec<u8> {
     slice_from_wslice(wslice).to_vec()
 }
 
-/// Store asset with the given asset id in the current account as byte array .
+/// Store asset with the given asset id in the current account as byte array.
 pub fn store_asset(id: &str, value: &[u8]) {
     let id_addr = slice_to_mem(id.as_bytes());
     let value_addr = slice_to_mem(value);
     unsafe { hf_store_asset(id_addr, id.len() as i32, value_addr, value.len() as i32) };
+}
+
+/// Remove the asset with the given asset id in the current account.
+pub fn remove_asset(id: &str) {
+    let id_addr = slice_to_mem(id.as_bytes());
+    unsafe { hf_remove_asset(id_addr, id.len() as i32) };
 }
 
 /// Verify the signature of the given data by the given pk and algorithm
