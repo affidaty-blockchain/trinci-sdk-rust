@@ -29,8 +29,12 @@ Additional labels for pre-release metadata:
 0.2.7 unreleased
 --------------------
 Added
-* drand host function facilitator
+* `drand` host function facilitator
+* `remove_asset` host function facilitator
+* `get_block_time` host function facilitator
+* `get_block_time` mocked method for test
 * `advanced_asset_transfer` mocked method for test
+
 
 Changed
 * `is_callable` now returns a boolean

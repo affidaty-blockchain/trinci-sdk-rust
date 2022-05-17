@@ -103,6 +103,9 @@ extern "C" {
     /// Drand host function
     fn hf_drand(max: u64) -> u64;
 
+    /// Get the next block timestamp
+    fn hf_get_block_time() -> u64;
+
 }
 
 /// Logging facility for smart contracts.
@@ -221,6 +224,11 @@ pub fn verify(pk: &PublicKey, data: &[u8], sign: &[u8]) -> bool {
 /// Calculate a random number for the blockchain
 pub fn drand(max: u64) -> u64 {
     unsafe { hf_drand(max) }
+}
+
+/// Get the next block timestamp
+pub fn get_block_timne() -> u64 {
+    unsafe { hf_get_block_time() }
 }
 
 /// Calculates the Sha256 hash of the data

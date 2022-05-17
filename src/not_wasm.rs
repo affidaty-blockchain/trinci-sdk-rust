@@ -372,6 +372,11 @@ pub extern "C" fn hf_drand(max: u64) -> u64 {
     max / 2
 }
 
+#[no_mangle]
+pub extern "C" fn hf_get_block_time() -> u64 {
+    1652780598
+}
+
 // Use the first byte of the sign to return success or error.
 #[no_mangle]
 pub extern "C" fn hf_verify(
