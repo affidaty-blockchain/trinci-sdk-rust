@@ -26,7 +26,7 @@ Additional labels for pre-release metadata:
 * beta.x: shipped version under testing.
 * rc.x: stable release candidate.
 
-0.2.7 unreleased
+0.2.7 - 24-05-2022
 --------------------
 Added
 * `drand` host function facilitator
