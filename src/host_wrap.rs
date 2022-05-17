@@ -179,21 +179,24 @@ pub fn remove_data(key: &str) {
     unsafe { hf_remove_data(key_addr, key.len() as i32) };
 }
 
-/// Load asset with the given asset id from the current account as byte array.
+/// Load an asset from the given `account-id` as byte array.
+/// The `asset_id` key is the current account id (owner)
 pub fn load_asset(id: &str) -> Vec<u8> {
     let id_addr = slice_to_mem(id.as_bytes());
     let wslice = unsafe { hf_load_asset(id_addr, id.len() as i32) };
     slice_from_wslice(wslice).to_vec()
 }
 
-/// Store asset with the given asset id in the current account as byte array.
+/// Store an asset into the given `account-id` as byte array.
+/// The `asset_id` key is the current account id (owner)
 pub fn store_asset(id: &str, value: &[u8]) {
     let id_addr = slice_to_mem(id.as_bytes());
     let value_addr = slice_to_mem(value);
     unsafe { hf_store_asset(id_addr, id.len() as i32, value_addr, value.len() as i32) };
 }
 
-/// Remove the asset with the given asset id in the current account.
+/// Remove an asset from the given `account-id`
+/// The `asset_id` key is the current account id (owner)
 pub fn remove_asset(id: &str) {
     let id_addr = slice_to_mem(id.as_bytes());
     unsafe { hf_remove_asset(id_addr, id.len() as i32) };
