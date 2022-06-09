@@ -230,7 +230,7 @@ pub fn drand(max: u64) -> u64 {
 }
 
 /// Get the next block timestamp
-pub fn get_block_timne() -> u64 {
+pub fn get_block_time() -> u64 {
     unsafe { hf_get_block_time() }
 }
 
