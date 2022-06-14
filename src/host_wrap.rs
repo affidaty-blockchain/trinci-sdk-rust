@@ -25,7 +25,7 @@ use crate::{
 
 use serde::{de::DeserializeOwned, Serialize};
 
-/// Host functions imported
+// Host functions imported
 extern "C" {
     /// Raw log host function
     fn hf_log(msg_addr: i32, msg_size: i32);
