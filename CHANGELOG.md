@@ -26,6 +26,12 @@ Additional labels for pre-release metadata:
 * beta.x: shipped version under testing.
 * rc.x: stable release candidate.
 
+0.2.8 - 05-07-2022
+------------------
+Changed
+* Minor fix to fix unused doc comment
+
+
 0.2.7 - 24-05-2022
 --------------------
 Added
@@ -35,9 +41,9 @@ Added
 * `get_block_time` mocked method for test
 * `advanced_asset_transfer` mocked method for test
 
-
 Changed
 * `is_callable` now returns a boolean
+
 
 0.2.7-rc1 16-02-2022
 ----------------
